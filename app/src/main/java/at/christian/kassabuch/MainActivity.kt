@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import at.christian.kassabuch.ui.DashboardExpenseItem
 import at.christian.kassabuch.ui.DashboardScreen
 import at.christian.kassabuch.ui.DashboardUiState
 
