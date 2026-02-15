@@ -11,4 +11,18 @@
 
     <string name="action_add_income">Einnahme hinzufügen</string>
     <string name="action_add_expense">Ausgabe hinzufügen</string>
+    <string name="action_back">Zurück</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_cancel">Abbrechen</string>
+
+    <string name="income_title">Einnahmen</string>
+    <string name="income_empty_state">Noch keine Einnahmen erfasst.</string>
+    <string name="income_add_title">Einnahme hinzufügen</string>
+    <string name="income_category_label">Kategorie</string>
+    <string name="income_amount_label">Betrag</string>
+    <string name="income_date_label">Datum (TT.MM.JJJJ)</string>
+    <string name="income_type_label">Typ</string>
+    <string name="income_type_one_time">Einmalig</string>
+    <string name="income_type_recurring">Wiederkehrend</string>
+    <string name="income_note_label">Text / Notiz</string>
 </resources>

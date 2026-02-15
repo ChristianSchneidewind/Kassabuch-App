@@ -37,7 +37,11 @@ data class DashboardUiState(
 )
 
 @Composable
-fun DashboardScreen(uiState: DashboardUiState) {
+fun DashboardScreen(
+    uiState: DashboardUiState,
+    onAddIncome: () -> Unit,
+    onAddExpense: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -158,13 +162,13 @@ fun DashboardScreen(uiState: DashboardUiState) {
         ) {
             Button(
                 modifier = Modifier.weight(1f),
-                onClick = { }
+                onClick = onAddIncome
             ) {
                 Text(text = stringResource(R.string.action_add_income))
             }
             Button(
                 modifier = Modifier.weight(1f),
-                onClick = { }
+                onClick = onAddExpense
             ) {
                 Text(text = stringResource(R.string.action_add_expense))
             }
@@ -202,7 +206,9 @@ private fun DashboardScreenPreview() {
                             amount = "18,00 €"
                         )
                     )
-                )
+                ),
+                onAddIncome = { },
+                onAddExpense = { }
             )
         }
     }
