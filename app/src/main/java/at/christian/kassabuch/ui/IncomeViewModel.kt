@@ -38,7 +38,8 @@ class IncomeViewModel(private val repository: IncomeRepository) : ViewModel() {
                                     "Einmalig"
                                 } else {
                                     "Wiederkehrend"
-                                }
+                                },
+                                note = income.note
                             )
                         }
                     )
@@ -47,14 +48,21 @@ class IncomeViewModel(private val repository: IncomeRepository) : ViewModel() {
         }
     }
 
-    fun addIncome(category: String, amount: Double, date: LocalDate, type: IncomeType) {
+    fun addIncome(
+        category: String,
+        amount: Double,
+        date: LocalDate,
+        type: IncomeType,
+        note: String?
+    ) {
         viewModelScope.launch {
             repository.addIncome(
                 IncomeEntity(
                     category = category,
                     amount = amount,
                     date = date,
-                    type = type
+                    type = type,
+                    note = note
                 )
             )
         }
@@ -80,5 +88,6 @@ data class IncomeListItem(
     val category: String,
     val amount: String,
     val date: String,
-    val typeLabel: String
+    val typeLabel: String,
+    val note: String?
 )

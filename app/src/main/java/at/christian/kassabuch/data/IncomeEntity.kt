@@ -11,7 +11,8 @@ data class IncomeEntity(
     val category: String,
     val amount: Double,
     val date: LocalDate,
-    val type: IncomeType
+    val type: IncomeType,
+    val note: String? = null
 )
 
 enum class IncomeType {

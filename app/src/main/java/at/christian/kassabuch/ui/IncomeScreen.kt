@@ -37,7 +37,7 @@ private val dateInputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 fun IncomeScreen(
     uiState: IncomeUiState,
     categories: List<String>,
-    onAddIncome: (String, Double, LocalDate, IncomeType) -> Unit,
+    onAddIncome: (String, Double, LocalDate, IncomeType, String?) -> Unit,
     onBack: () -> Unit
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
@@ -94,6 +94,13 @@ fun IncomeScreen(
                                 text = income.date,
                                 style = MaterialTheme.typography.bodySmall
                             )
+                            income.note?.let { note ->
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = note,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                         }
                     }
                 }
@@ -105,8 +112,8 @@ fun IncomeScreen(
         AddIncomeDialog(
             categories = categories,
             onDismiss = { showDialog = false },
-            onConfirm = { category, amount, date, type ->
-                onAddIncome(category, amount, date, type)
+            onConfirm = { category, amount, date, type, note ->
+                onAddIncome(category, amount, date, type, note)
                 showDialog = false
             }
         )
@@ -117,13 +124,14 @@ fun IncomeScreen(
 private fun AddIncomeDialog(
     categories: List<String>,
     onDismiss: () -> Unit,
-    onConfirm: (String, Double, LocalDate, IncomeType) -> Unit
+    onConfirm: (String, Double, LocalDate, IncomeType, String?) -> Unit
 ) {
     var selectedCategory by rememberSaveable { mutableStateOf(categories.firstOrNull().orEmpty()) }
     var categoryExpanded by rememberSaveable { mutableStateOf(false) }
     var amountInput by rememberSaveable { mutableStateOf("") }
     var dateInput by rememberSaveable { mutableStateOf(LocalDate.now().format(dateInputFormatter)) }
     var type by rememberSaveable { mutableStateOf(IncomeType.ONE_TIME) }
+    var noteInput by rememberSaveable { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -133,7 +141,8 @@ private fun AddIncomeDialog(
                 val amount = amountInput.replace(",", ".").toDoubleOrNull()
                 val date = runCatching { LocalDate.parse(dateInput, dateInputFormatter) }.getOrNull()
                 if (amount != null && date != null && selectedCategory.isNotBlank()) {
-                    onConfirm(selectedCategory, amount, date, type)
+                    val note = noteInput.trim().ifBlank { null }
+                    onConfirm(selectedCategory, amount, date, type, note)
                 }
             }) {
                 Text(text = stringResource(R.string.action_save))
@@ -192,6 +201,13 @@ private fun AddIncomeDialog(
                         }
                     }
                 }
+
+                OutlinedTextField(
+                    value = noteInput,
+                    onValueChange = { noteInput = it },
+                    label = { Text(text = stringResource(R.string.income_note_label)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     )
@@ -229,19 +245,21 @@ private fun IncomeScreenPreview() {
                         category = "Lohn",
                         amount = "1.500,00 €",
                         date = "01.03.2026",
-                        typeLabel = "Einmalig"
+                        typeLabel = "Einmalig",
+                        note = "Bonus"
                     ),
                     IncomeListItem(
                         id = 2,
                         category = "Sozialleistungen",
                         amount = "800,00 €",
                         date = "02.03.2026",
-                        typeLabel = "Wiederkehrend"
+                        typeLabel = "Wiederkehrend",
+                        note = "Notstandshilfe"
                     )
                 )
             ),
             categories = listOf("Lohn", "Sozialleistungen"),
-            onAddIncome = { _, _, _, _ -> },
+            onAddIncome = { _, _, _, _, _ -> },
             onBack = { }
         )
     }

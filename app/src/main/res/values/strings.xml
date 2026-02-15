@@ -24,4 +24,5 @@
     <string name="income_type_label">Typ</string>
     <string name="income_type_one_time">Einmalig</string>
     <string name="income_type_recurring">Wiederkehrend</string>
+    <string name="income_note_label">Text / Notiz</string>
 </resources>
