@@ -17,10 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.christian.kassabuch.data.AppDatabase
+import at.christian.kassabuch.data.ExpenseRepository
 import at.christian.kassabuch.data.IncomeRepository
 import at.christian.kassabuch.ui.DashboardExpenseItem
 import at.christian.kassabuch.ui.DashboardScreen
 import at.christian.kassabuch.ui.DashboardUiState
+import at.christian.kassabuch.ui.ExpenseScreen
+import at.christian.kassabuch.ui.ExpenseViewModel
+import at.christian.kassabuch.ui.ExpenseViewModelFactory
 import at.christian.kassabuch.ui.IncomeScreen
 import at.christian.kassabuch.ui.IncomeViewModel
 import at.christian.kassabuch.ui.IncomeViewModelFactory
@@ -38,9 +42,20 @@ class MainActivity : ComponentActivity() {
 fun KassabuchApp() {
     val context = LocalContext.current
     val database = remember { AppDatabase.getInstance(context) }
-    val repository = remember { IncomeRepository(database.incomeDao()) }
-    val viewModel: IncomeViewModel = viewModel(factory = IncomeViewModelFactory(repository))
-    val incomeState by viewModel.uiState.collectAsState()
+    val incomeRepository = remember { IncomeRepository(database.incomeDao()) }
+    val expenseRepository = remember { ExpenseRepository(database.expenseDao()) }
+
+    val incomeViewModel: IncomeViewModel = viewModel(
+        key = "income",
+        factory = IncomeViewModelFactory(incomeRepository)
+    )
+    val expenseViewModel: ExpenseViewModel = viewModel(
+        key = "expense",
+        factory = ExpenseViewModelFactory(expenseRepository)
+    )
+
+    val incomeState by incomeViewModel.uiState.collectAsState()
+    val expenseState by expenseViewModel.uiState.collectAsState()
 
     var currentScreen by rememberSaveable { mutableStateOf(Screen.Dashboard) }
 
@@ -75,14 +90,35 @@ fun KassabuchApp() {
                             )
                         ),
                         onAddIncome = { currentScreen = Screen.Income },
-                        onAddExpense = { }
+                        onAddExpense = { currentScreen = Screen.Expense }
                     )
                 }
                 Screen.Income -> {
                     IncomeScreen(
                         uiState = incomeState,
                         categories = listOf("Lohn", "Sozialleistungen"),
-                        onAddIncome = viewModel::addIncome,
+                        onAddIncome = incomeViewModel::addIncome,
+                        onBack = { currentScreen = Screen.Dashboard }
+                    )
+                }
+                Screen.Expense -> {
+                    ExpenseScreen(
+                        uiState = expenseState,
+                        categories = listOf(
+                            "Lebensmittel",
+                            "Wohnen/Miete",
+                            "Alimente",
+                            "Heizen/Strom",
+                            "Internet/Telefon",
+                            "Mobilität/Transport",
+                            "Gesundheit/Medikamente",
+                            "Kleidung",
+                            "Freizeit",
+                            "Versicherungen",
+                            "Google Play",
+                            "Sonstiges"
+                        ),
+                        onAddExpense = expenseViewModel::addExpense,
                         onBack = { currentScreen = Screen.Dashboard }
                     )
                 }
@@ -93,5 +129,6 @@ fun KassabuchApp() {
 
 private enum class Screen {
     Dashboard,
-    Income
+    Income,
+    Expense
 }
