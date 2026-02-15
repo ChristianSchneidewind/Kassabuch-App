@@ -15,11 +15,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.christian.kassabuch.data.AppDatabase
 import at.christian.kassabuch.data.DailyRateRepository
 import at.christian.kassabuch.data.ExpenseRepository
 import at.christian.kassabuch.data.IncomeRepository
+import at.christian.kassabuch.data.PayoutScheduleRepository
+import at.christian.kassabuch.data.SeedingRunner
 import at.christian.kassabuch.ui.DailyRateViewModel
 import at.christian.kassabuch.ui.DailyRateViewModelFactory
 import at.christian.kassabuch.ui.DashboardScreen
@@ -31,6 +34,9 @@ import at.christian.kassabuch.ui.ExpenseViewModelFactory
 import at.christian.kassabuch.ui.IncomeScreen
 import at.christian.kassabuch.ui.IncomeViewModel
 import at.christian.kassabuch.ui.IncomeViewModelFactory
+import at.christian.kassabuch.ui.PayoutScheduleScreen
+import at.christian.kassabuch.ui.PayoutScheduleViewModel
+import at.christian.kassabuch.ui.PayoutScheduleViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +54,7 @@ fun KassabuchApp() {
     val incomeRepository = remember { IncomeRepository(database.incomeDao()) }
     val expenseRepository = remember { ExpenseRepository(database.expenseDao()) }
     val dailyRateRepository = remember { DailyRateRepository(database.dailyRateDao()) }
+    val payoutScheduleRepository = remember { PayoutScheduleRepository(database.payoutScheduleDao()) }
 
     val incomeViewModel: IncomeViewModel = viewModel(
         key = "income",
@@ -63,12 +70,21 @@ fun KassabuchApp() {
     )
     val dashboardViewModel: DashboardViewModel = viewModel(
         key = "dashboard",
-        factory = DashboardViewModelFactory(dailyRateRepository)
+        factory = DashboardViewModelFactory(dailyRateRepository, payoutScheduleRepository)
+    )
+    val payoutScheduleViewModel: PayoutScheduleViewModel = viewModel(
+        key = "payout",
+        factory = PayoutScheduleViewModelFactory(payoutScheduleRepository)
     )
 
     val incomeState by incomeViewModel.uiState.collectAsState()
     val expenseState by expenseViewModel.uiState.collectAsState()
     val dashboardState by dashboardViewModel.uiState.collectAsState()
+    val payoutState by payoutScheduleViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        SeedingRunner(database.payoutScheduleDao()).seedIfEmpty()
+    }
 
     var currentScreen by rememberSaveable { mutableStateOf(Screen.Dashboard) }
 
@@ -79,7 +95,8 @@ fun KassabuchApp() {
                     DashboardScreen(
                         uiState = dashboardState,
                         onAddIncome = { currentScreen = Screen.Income },
-                        onAddExpense = { currentScreen = Screen.Expense }
+                        onAddExpense = { currentScreen = Screen.Expense },
+                        onShowPayouts = { currentScreen = Screen.Payouts }
                     )
                 }
                 Screen.Income -> {
@@ -112,6 +129,13 @@ fun KassabuchApp() {
                         onBack = { currentScreen = Screen.Dashboard }
                     )
                 }
+                Screen.Payouts -> {
+                    PayoutScheduleScreen(
+                        uiState = payoutState,
+                        onUpdateSchedule = payoutScheduleViewModel::updateSchedule,
+                        onBack = { currentScreen = Screen.Dashboard }
+                    )
+                }
             }
         }
     }
@@ -120,5 +144,6 @@ fun KassabuchApp() {
 private enum class Screen {
     Dashboard,
     Income,
-    Expense
+    Expense,
+    Payouts
 }

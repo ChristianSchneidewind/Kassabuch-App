@@ -2,6 +2,7 @@ package at.christian.kassabuch.data
 
 import androidx.room.TypeConverter
 import java.time.LocalDate
+import java.time.YearMonth
 
 class Converters {
     @TypeConverter
@@ -12,6 +13,16 @@ class Converters {
     @TypeConverter
     fun fromLocalDate(date: LocalDate?): String? {
         return date?.toString()
+    }
+
+    @TypeConverter
+    fun toYearMonth(value: String?): YearMonth? {
+        return value?.let { YearMonth.parse(it) }
+    }
+
+    @TypeConverter
+    fun fromYearMonth(value: YearMonth?): String? {
+        return value?.toString()
     }
 
     @TypeConverter

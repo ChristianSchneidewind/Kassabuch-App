@@ -19,7 +19,10 @@ import java.util.Locale
 private val dashboardCurrencyFormatter = NumberFormat.getCurrencyInstance(Locale.GERMANY)
 private val dashboardMonthFormatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.GERMANY)
 
-class DashboardViewModel(private val rateRepository: DailyRateRepository) : ViewModel() {
+class DashboardViewModel(
+    private val rateRepository: DailyRateRepository,
+    private val payoutRepository: PayoutScheduleRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(
         DashboardUiState(
             monthTitle = YearMonth.now().format(dashboardMonthFormatter),
@@ -58,14 +61,29 @@ class DashboardViewModel(private val rateRepository: DailyRateRepository) : View
                 }
             }
         }
+
+        viewModelScope.launch {
+            payoutRepository.observeSchedules().collect { schedules ->
+                val previousMonth = YearMonth.now().minusMonths(1)
+                val payout = schedules.firstOrNull { it.month == previousMonth }
+                val formatted = payout?.payoutDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                    ?: "—"
+                _uiState.update { state ->
+                    state.copy(payoutDate = formatted)
+                }
+            }
+        }
     }
 }
 
-class DashboardViewModelFactory(private val repository: DailyRateRepository) : ViewModelProvider.Factory {
+class DashboardViewModelFactory(
+    private val rateRepository: DailyRateRepository,
+    private val payoutRepository: PayoutScheduleRepository
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DashboardViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return DashboardViewModel(repository) as T
+            return DashboardViewModel(rateRepository, payoutRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
