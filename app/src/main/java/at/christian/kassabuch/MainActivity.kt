@@ -49,6 +49,8 @@ import at.christian.kassabuch.ui.IncomeViewModelFactory
 import at.christian.kassabuch.ui.PayoutScheduleScreen
 import at.christian.kassabuch.ui.PayoutScheduleViewModel
 import at.christian.kassabuch.ui.PayoutScheduleViewModelFactory
+import at.christian.kassabuch.ui.MainNav
+import at.christian.kassabuch.ui.MoreScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,34 +129,6 @@ fun KassabuchApp() {
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             when (currentScreen) {
-                Screen.Dashboard -> {
-                    DashboardScreen(
-                        uiState = dashboardState,
-                        onAddIncome = { currentScreen = Screen.Income },
-                        onAddExpense = { currentScreen = Screen.Expense },
-                        onShowPayouts = { currentScreen = Screen.Payouts },
-                        onShowFixedExpenses = { currentScreen = Screen.FixedExpenses },
-                        onShowCategories = { currentScreen = Screen.Categories },
-                        onShowBudget = { currentScreen = Screen.Budget }
-                    )
-                }
-                Screen.Income -> {
-                    IncomeScreen(
-                        uiState = incomeState,
-                        categories = categoriesState.income.map { it.name },
-                        onAddIncome = incomeViewModel::addIncome,
-                        onEditDailyRate = dailyRateViewModel::addRate,
-                        onBack = { currentScreen = Screen.Dashboard }
-                    )
-                }
-                Screen.Expense -> {
-                    ExpenseScreen(
-                        uiState = expenseState,
-                        categories = categoriesState.expenses.map { it.name },
-                        onAddExpense = expenseViewModel::addExpense,
-                        onBack = { currentScreen = Screen.Dashboard }
-                    )
-                }
                 Screen.Payouts -> {
                     PayoutScheduleScreen(
                         uiState = payoutState,
@@ -185,6 +159,46 @@ fun KassabuchApp() {
                         onSetBudget = budgetViewModel::setBudget,
                         onMonthChange = budgetViewModel::setMonth,
                         onBack = { currentScreen = Screen.Dashboard }
+                    )
+                }
+                else -> {
+                    MainNav(
+                        dashboardContent = {
+                            DashboardScreen(
+                                uiState = dashboardState,
+                                onAddIncome = { currentScreen = Screen.Income },
+                                onAddExpense = { currentScreen = Screen.Expense },
+                                onShowPayouts = { currentScreen = Screen.Payouts },
+                                onShowFixedExpenses = { currentScreen = Screen.FixedExpenses },
+                                onShowCategories = { currentScreen = Screen.Categories },
+                                onShowBudget = { currentScreen = Screen.Budget }
+                            )
+                        },
+                        incomeContent = {
+                            IncomeScreen(
+                                uiState = incomeState,
+                                categories = categoriesState.income.map { it.name },
+                                onAddIncome = incomeViewModel::addIncome,
+                                onEditDailyRate = dailyRateViewModel::addRate,
+                                onBack = { currentScreen = Screen.Dashboard }
+                            )
+                        },
+                        expenseContent = {
+                            ExpenseScreen(
+                                uiState = expenseState,
+                                categories = categoriesState.expenses.map { it.name },
+                                onAddExpense = expenseViewModel::addExpense,
+                                onBack = { currentScreen = Screen.Dashboard }
+                            )
+                        },
+                        moreContent = {
+                            MoreScreen(
+                                onShowCategories = { currentScreen = Screen.Categories },
+                                onShowPayouts = { currentScreen = Screen.Payouts },
+                                onShowBudget = { currentScreen = Screen.Budget },
+                                onShowFixedExpenses = { currentScreen = Screen.FixedExpenses }
+                            )
+                        }
                     )
                 }
             }

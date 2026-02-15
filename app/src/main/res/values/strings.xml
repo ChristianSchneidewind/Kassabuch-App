@@ -12,6 +12,12 @@
     <string name="action_add_income">Einnahme hinzufügen</string>
     <string name="action_add_expense">Ausgabe hinzufügen</string>
     <string name="action_back">Zurück</string>
+
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_income">Einnahmen</string>
+    <string name="nav_expense">Ausgaben</string>
+    <string name="nav_more">Mehr</string>
+    <string name="more_title">Mehr</string>
     <string name="action_save">Speichern</string>
     <string name="action_cancel">Abbrechen</string>
 
