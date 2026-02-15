@@ -39,4 +39,13 @@
     <string name="expense_type_fixed">Fix</string>
     <string name="expense_type_variable">Variabel</string>
     <string name="expense_note_label">Text / Notiz</string>
+
+    <string name="payout_schedule_title">Auszahlungstermine</string>
+    <string name="payout_schedule_hint">Hinweis: Auszahlung gilt für Vormonat</string>
+    <string name="payout_schedule_empty">Keine Auszahlungstermine vorhanden.</string>
+    <string name="payout_schedule_edit_title">Auszahlungstermin bearbeiten</string>
+    <string name="payout_schedule_month_label">Monat</string>
+    <string name="payout_schedule_date_label">Auszahlungstermin</string>
+    <string name="payout_schedule_button">Auszahlungstermine</string>
+    <string name="action_edit">Bearbeiten</string>
 </resources>
