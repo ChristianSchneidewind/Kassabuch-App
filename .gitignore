@@ -26,6 +26,9 @@ local.properties
 # Project docs (local)
 /phases/
 
+# Shell configs (local)
+.bashrc
+
 # Keystores & secrets
 *.jks
 *.keystore
