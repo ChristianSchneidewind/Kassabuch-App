@@ -26,6 +26,9 @@
     <string name="income_type_recurring">Wiederkehrend</string>
     <string name="income_note_label">Text / Notiz</string>
 
+    <string name="income_daily_rate_label">Tagsatz (optional)</string>
+    <string name="income_daily_rate_hint">Gültig ab = Einnahme-Datum</string>
+
     <string name="expense_title">Ausgaben</string>
     <string name="expense_empty_state">Noch keine Ausgaben erfasst.</string>
     <string name="expense_add_title">Ausgabe hinzufügen</string>

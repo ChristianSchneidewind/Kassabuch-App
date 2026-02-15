@@ -6,11 +6,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [IncomeEntity::class, ExpenseEntity::class], version = 2, exportSchema = false)
+@Database(
+    entities = [IncomeEntity::class, ExpenseEntity::class, DailyRateEntity::class],
+    version = 3,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun incomeDao(): IncomeDao
     abstract fun expenseDao(): ExpenseDao
+    abstract fun dailyRateDao(): DailyRateDao
 
     companion object {
         @Volatile

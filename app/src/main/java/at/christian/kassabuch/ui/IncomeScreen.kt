@@ -38,6 +38,7 @@ fun IncomeScreen(
     uiState: IncomeUiState,
     categories: List<String>,
     onAddIncome: (String, Double, LocalDate, IncomeType, String?) -> Unit,
+    onEditDailyRate: (Double, LocalDate) -> Unit,
     onBack: () -> Unit
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
@@ -112,8 +113,9 @@ fun IncomeScreen(
         AddIncomeDialog(
             categories = categories,
             onDismiss = { showDialog = false },
-            onConfirm = { category, amount, date, type, note ->
+            onConfirm = { category, amount, date, type, note, dailyRate ->
                 onAddIncome(category, amount, date, type, note)
+                dailyRate?.let { onEditDailyRate(it, date) }
                 showDialog = false
             }
         )
@@ -124,7 +126,7 @@ fun IncomeScreen(
 private fun AddIncomeDialog(
     categories: List<String>,
     onDismiss: () -> Unit,
-    onConfirm: (String, Double, LocalDate, IncomeType, String?) -> Unit
+    onConfirm: (String, Double, LocalDate, IncomeType, String?, Double?) -> Unit
 ) {
     var selectedCategory by rememberSaveable { mutableStateOf(categories.firstOrNull().orEmpty()) }
     var categoryExpanded by rememberSaveable { mutableStateOf(false) }
@@ -132,6 +134,7 @@ private fun AddIncomeDialog(
     var dateInput by rememberSaveable { mutableStateOf(LocalDate.now().format(dateInputFormatter)) }
     var type by rememberSaveable { mutableStateOf(IncomeType.ONE_TIME) }
     var noteInput by rememberSaveable { mutableStateOf("") }
+    var dailyRateInput by rememberSaveable { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -142,7 +145,8 @@ private fun AddIncomeDialog(
                 val date = runCatching { LocalDate.parse(dateInput, dateInputFormatter) }.getOrNull()
                 if (amount != null && date != null && selectedCategory.isNotBlank()) {
                     val note = noteInput.trim().ifBlank { null }
-                    onConfirm(selectedCategory, amount, date, type, note)
+                    val dailyRate = dailyRateInput.replace(",", ".").toDoubleOrNull()
+                    onConfirm(selectedCategory, amount, date, type, note, dailyRate)
                 }
             }) {
                 Text(text = stringResource(R.string.action_save))
@@ -208,6 +212,16 @@ private fun AddIncomeDialog(
                     label = { Text(text = stringResource(R.string.income_note_label)) },
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                OutlinedTextField(
+                    value = dailyRateInput,
+                    onValueChange = { dailyRateInput = it },
+                    label = { Text(text = stringResource(R.string.income_daily_rate_label)) },
+                    supportingText = {
+                        Text(text = stringResource(R.string.income_daily_rate_hint))
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     )
@@ -260,6 +274,7 @@ private fun IncomeScreenPreview() {
             ),
             categories = listOf("Lohn", "Sozialleistungen"),
             onAddIncome = { _, _, _, _, _ -> },
+            onEditDailyRate = { _, _ -> },
             onBack = { }
         )
     }
