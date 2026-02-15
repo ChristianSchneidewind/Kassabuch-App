@@ -67,6 +67,14 @@
     <string name="categories_name_label">Name</string>
     <string name="categories_empty_state">Keine Kategorien vorhanden.</string>
     <string name="categories_button">Kategorien</string>
+    <string name="budget_button">Monatsbudget</string>
+    <string name="budget_title">Monatsbudget</string>
+    <string name="budget_current_label">Aktuelles Budget</string>
+    <string name="budget_set_button">Budget setzen</string>
+    <string name="budget_set_title">Budget setzen</string>
+    <string name="budget_amount_label">Betrag</string>
+    <string name="budget_warning">Warnung: Budget überschritten</string>
+    <string name="budget_spend_label">Ausgaben: %1$s</string>
     <string name="action_edit">Bearbeiten</string>
     <string name="action_rename">Umbenennen</string>
 </resources>

@@ -23,8 +23,12 @@ import at.christian.kassabuch.data.DailyRateRepository
 import at.christian.kassabuch.data.ExpenseRepository
 import at.christian.kassabuch.data.FixedExpenseRuleRepository
 import at.christian.kassabuch.data.IncomeRepository
+import at.christian.kassabuch.data.MonthlyBudgetRepository
 import at.christian.kassabuch.data.PayoutScheduleRepository
 import at.christian.kassabuch.data.SeedingRunner
+import at.christian.kassabuch.ui.BudgetScreen
+import at.christian.kassabuch.ui.BudgetViewModel
+import at.christian.kassabuch.ui.BudgetViewModelFactory
 import at.christian.kassabuch.ui.CategoriesScreen
 import at.christian.kassabuch.ui.CategoriesViewModel
 import at.christian.kassabuch.ui.CategoriesViewModelFactory
@@ -67,6 +71,7 @@ fun KassabuchApp() {
     val categoryRepository = remember {
         CategoryRepository(database.incomeCategoryDao(), database.expenseCategoryDao())
     }
+    val budgetRepository = remember { MonthlyBudgetRepository(database.monthlyBudgetDao()) }
 
     val incomeViewModel: IncomeViewModel = viewModel(
         key = "income",
@@ -96,6 +101,10 @@ fun KassabuchApp() {
         key = "categories",
         factory = CategoriesViewModelFactory(categoryRepository)
     )
+    val budgetViewModel: BudgetViewModel = viewModel(
+        key = "budget",
+        factory = BudgetViewModelFactory(budgetRepository, expenseRepository)
+    )
 
     val incomeState by incomeViewModel.uiState.collectAsState()
     val expenseState by expenseViewModel.uiState.collectAsState()
@@ -103,6 +112,7 @@ fun KassabuchApp() {
     val payoutState by payoutScheduleViewModel.uiState.collectAsState()
     val fixedExpenseState by fixedExpenseViewModel.uiState.collectAsState()
     val categoriesState by categoriesViewModel.uiState.collectAsState()
+    val budgetState by budgetViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         SeedingRunner(
@@ -124,7 +134,8 @@ fun KassabuchApp() {
                         onAddExpense = { currentScreen = Screen.Expense },
                         onShowPayouts = { currentScreen = Screen.Payouts },
                         onShowFixedExpenses = { currentScreen = Screen.FixedExpenses },
-                        onShowCategories = { currentScreen = Screen.Categories }
+                        onShowCategories = { currentScreen = Screen.Categories },
+                        onShowBudget = { currentScreen = Screen.Budget }
                     )
                 }
                 Screen.Income -> {
@@ -168,6 +179,14 @@ fun KassabuchApp() {
                         onBack = { currentScreen = Screen.Dashboard }
                     )
                 }
+                Screen.Budget -> {
+                    BudgetScreen(
+                        uiState = budgetState,
+                        onSetBudget = budgetViewModel::setBudget,
+                        onMonthChange = budgetViewModel::setMonth,
+                        onBack = { currentScreen = Screen.Dashboard }
+                    )
+                }
             }
         }
     }
@@ -179,5 +198,6 @@ private enum class Screen {
     Expense,
     Payouts,
     FixedExpenses,
-    Categories
+    Categories,
+    Budget
 }
