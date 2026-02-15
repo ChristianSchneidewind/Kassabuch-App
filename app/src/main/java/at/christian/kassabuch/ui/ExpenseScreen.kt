@@ -70,38 +70,36 @@ fun ExpenseScreen(
             }
         }
 
-        if (uiState.items.isEmpty()) {
+        if (uiState.fixedItems.isEmpty() && uiState.variableItems.isEmpty()) {
             Text(
                 text = stringResource(R.string.expense_empty_state),
                 style = MaterialTheme.typography.bodyMedium
             )
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(uiState.items, key = { it.id }) { expense ->
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = expense.category,
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "${expense.amount} • ${expense.typeLabel}",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = expense.date,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                            expense.note?.let { note ->
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(
-                                    text = note,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
-                        }
+                if (uiState.fixedItems.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.expense_fixed_section),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    items(uiState.fixedItems, key = { it.id }) { expense ->
+                        ExpenseCard(expense)
+                    }
+                }
+                if (uiState.variableItems.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.expense_variable_section),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    items(uiState.variableItems, key = { it.id }) { expense ->
+                        ExpenseCard(expense)
                     }
                 }
             }
@@ -117,6 +115,35 @@ fun ExpenseScreen(
                 showDialog = false
             }
         )
+    }
+}
+
+@Composable
+private fun ExpenseCard(expense: ExpenseListItem) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = expense.category,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "${expense.amount} • ${expense.typeLabel}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = expense.date,
+                style = MaterialTheme.typography.bodySmall
+            )
+            expense.note?.let { note ->
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = note,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
     }
 }
 
@@ -239,15 +266,7 @@ private fun ExpenseScreenPreview() {
     MaterialTheme {
         ExpenseScreen(
             uiState = ExpenseUiState(
-                items = listOf(
-                    ExpenseListItem(
-                        id = 1,
-                        category = "Lebensmittel",
-                        amount = "45,90 €",
-                        date = "12.03.2026",
-                        typeLabel = "Variabel",
-                        note = "Wocheneinkauf"
-                    ),
+                fixedItems = listOf(
                     ExpenseListItem(
                         id = 2,
                         category = "Internet/Telefon",
@@ -255,6 +274,16 @@ private fun ExpenseScreenPreview() {
                         date = "10.03.2026",
                         typeLabel = "Fix",
                         note = "Handyvertrag"
+                    )
+                ),
+                variableItems = listOf(
+                    ExpenseListItem(
+                        id = 1,
+                        category = "Lebensmittel",
+                        amount = "45,90 €",
+                        date = "12.03.2026",
+                        typeLabel = "Variabel",
+                        note = "Wocheneinkauf"
                     )
                 )
             ),
