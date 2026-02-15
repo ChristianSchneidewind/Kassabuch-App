@@ -1,0 +1,53 @@
+# Gradle
+.gradle/
+**/build/
+
+# Local configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Android artifacts
+*.apk
+*.aab
+*.ap_
+
+# Native build
+.externalNativeBuild/
+.cxx/
+
+# Logs
+*.log
+
+# Project docs (local)
+/phases/
+
+# Keystores & secrets
+*.jks
+*.keystore
+keystore.properties
+**/secrets.properties
+
+# Firebase
+google-services.json
+
+# IDE caches
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/shelf/
+
+# Test & report outputs
+**/test-results/
+**/reports/
+
+# Lint/Detekt baselines (optional)
+lint-baseline.xml
+detekt-baseline.xml
+
+# OS files
+.DS_Store
+Thumbs.db
