@@ -61,8 +61,13 @@ fun IncomeScreen(
             }
         }
 
-        Button(onClick = { showDialog = true }) {
-            Text(text = stringResource(R.string.action_add_income))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(onClick = { showDialog = true }) {
+                Text(text = stringResource(R.string.action_add_income))
+            }
         }
 
         if (uiState.items.isEmpty()) {
