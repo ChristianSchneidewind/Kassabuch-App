@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Kassabuch</string>
+
+    <string name="dashboard_ams_payout">Auszahlung</string>
+    <string name="dashboard_payout_for_prev_month">Auszahlung für Vormonat</string>
+    <string name="dashboard_payout_date">Auszahlungstermin: %1$s</string>
+    <string name="dashboard_monthly_balance">Monats-Saldo</string>
+    <string name="dashboard_income_sum">Einnahmen</string>
+    <string name="dashboard_expense_sum">Ausgaben</string>
+    <string name="dashboard_recent_expenses">Letzte Ausgaben</string>
+
+    <string name="action_add_income">Einnahme hinzufügen</string>
+    <string name="action_add_expense">Ausgabe hinzufügen</string>
 </resources>
