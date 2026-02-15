@@ -165,9 +165,10 @@ private fun AddIncomeDialog(
                         value = selectedCategory,
                         onValueChange = { },
                         readOnly = true,
+                        enabled = categories.isNotEmpty(),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { categoryExpanded = true }
+                            .clickable { if (categories.isNotEmpty()) categoryExpanded = true }
                     )
                     CategoryDropdown(
                         expanded = categoryExpanded,

@@ -42,7 +42,8 @@ fun DashboardScreen(
     onAddIncome: () -> Unit,
     onAddExpense: () -> Unit,
     onShowPayouts: () -> Unit,
-    onShowFixedExpenses: () -> Unit
+    onShowFixedExpenses: () -> Unit,
+    onShowCategories: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -192,6 +193,12 @@ fun DashboardScreen(
             ) {
                 Text(text = stringResource(R.string.fixed_expense_button))
             }
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = onShowCategories
+            ) {
+                Text(text = stringResource(R.string.categories_button))
+            }
         }
     }
 }
@@ -230,7 +237,8 @@ private fun DashboardScreenPreview() {
                 onAddIncome = { },
                 onAddExpense = { },
                 onShowPayouts = { },
-                onShowFixedExpenses = { }
+                onShowFixedExpenses = { },
+                onShowCategories = { }
             )
         }
     }

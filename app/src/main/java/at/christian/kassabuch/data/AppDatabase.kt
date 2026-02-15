@@ -12,9 +12,11 @@ import androidx.room.TypeConverters
         ExpenseEntity::class,
         DailyRateEntity::class,
         PayoutScheduleEntity::class,
-        FixedExpenseRuleEntity::class
+        FixedExpenseRuleEntity::class,
+        IncomeCategoryEntity::class,
+        ExpenseCategoryEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -24,6 +26,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dailyRateDao(): DailyRateDao
     abstract fun payoutScheduleDao(): PayoutScheduleDao
     abstract fun fixedExpenseRuleDao(): FixedExpenseRuleDao
+    abstract fun incomeCategoryDao(): IncomeCategoryDao
+    abstract fun expenseCategoryDao(): ExpenseCategoryDao
 
     companion object {
         @Volatile

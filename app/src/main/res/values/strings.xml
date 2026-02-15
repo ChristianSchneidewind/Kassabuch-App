@@ -58,5 +58,15 @@
     <string name="fixed_expense_date_label">Gültig ab (TT.MM.JJJJ)</string>
     <string name="fixed_expense_valid_from">Gültig ab: %1$s</string>
     <string name="fixed_expense_valid_to">Gültig bis: %1$s</string>
+    <string name="categories_title">Kategorien</string>
+    <string name="categories_income_tab">Einnahmen</string>
+    <string name="categories_expense_tab">Ausgaben</string>
+    <string name="categories_add_button">Kategorie hinzufügen</string>
+    <string name="categories_add_title">Kategorie hinzufügen</string>
+    <string name="categories_rename_title">Kategorie umbenennen</string>
+    <string name="categories_name_label">Name</string>
+    <string name="categories_empty_state">Keine Kategorien vorhanden.</string>
+    <string name="categories_button">Kategorien</string>
     <string name="action_edit">Bearbeiten</string>
+    <string name="action_rename">Umbenennen</string>
 </resources>

@@ -18,12 +18,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.christian.kassabuch.data.AppDatabase
+import at.christian.kassabuch.data.CategoryRepository
 import at.christian.kassabuch.data.DailyRateRepository
 import at.christian.kassabuch.data.ExpenseRepository
 import at.christian.kassabuch.data.FixedExpenseRuleRepository
 import at.christian.kassabuch.data.IncomeRepository
 import at.christian.kassabuch.data.PayoutScheduleRepository
 import at.christian.kassabuch.data.SeedingRunner
+import at.christian.kassabuch.ui.CategoriesScreen
+import at.christian.kassabuch.ui.CategoriesViewModel
+import at.christian.kassabuch.ui.CategoriesViewModelFactory
 import at.christian.kassabuch.ui.DailyRateViewModel
 import at.christian.kassabuch.ui.DailyRateViewModelFactory
 import at.christian.kassabuch.ui.DashboardScreen
@@ -60,6 +64,9 @@ fun KassabuchApp() {
     val dailyRateRepository = remember { DailyRateRepository(database.dailyRateDao()) }
     val payoutScheduleRepository = remember { PayoutScheduleRepository(database.payoutScheduleDao()) }
     val fixedExpenseRepository = remember { FixedExpenseRuleRepository(database.fixedExpenseRuleDao()) }
+    val categoryRepository = remember {
+        CategoryRepository(database.incomeCategoryDao(), database.expenseCategoryDao())
+    }
 
     val incomeViewModel: IncomeViewModel = viewModel(
         key = "income",
@@ -85,15 +92,24 @@ fun KassabuchApp() {
         key = "fixed",
         factory = FixedExpenseViewModelFactory(fixedExpenseRepository)
     )
+    val categoriesViewModel: CategoriesViewModel = viewModel(
+        key = "categories",
+        factory = CategoriesViewModelFactory(categoryRepository)
+    )
 
     val incomeState by incomeViewModel.uiState.collectAsState()
     val expenseState by expenseViewModel.uiState.collectAsState()
     val dashboardState by dashboardViewModel.uiState.collectAsState()
     val payoutState by payoutScheduleViewModel.uiState.collectAsState()
     val fixedExpenseState by fixedExpenseViewModel.uiState.collectAsState()
+    val categoriesState by categoriesViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        SeedingRunner(database.payoutScheduleDao()).seedIfEmpty()
+        SeedingRunner(
+            database.payoutScheduleDao(),
+            database.incomeCategoryDao(),
+            database.expenseCategoryDao()
+        ).seedIfEmpty()
     }
 
     var currentScreen by rememberSaveable { mutableStateOf(Screen.Dashboard) }
@@ -107,13 +123,14 @@ fun KassabuchApp() {
                         onAddIncome = { currentScreen = Screen.Income },
                         onAddExpense = { currentScreen = Screen.Expense },
                         onShowPayouts = { currentScreen = Screen.Payouts },
-                        onShowFixedExpenses = { currentScreen = Screen.FixedExpenses }
+                        onShowFixedExpenses = { currentScreen = Screen.FixedExpenses },
+                        onShowCategories = { currentScreen = Screen.Categories }
                     )
                 }
                 Screen.Income -> {
                     IncomeScreen(
                         uiState = incomeState,
-                        categories = listOf("Lohn", "Sozialleistungen"),
+                        categories = categoriesState.income.map { it.name },
                         onAddIncome = incomeViewModel::addIncome,
                         onEditDailyRate = dailyRateViewModel::addRate,
                         onBack = { currentScreen = Screen.Dashboard }
@@ -122,20 +139,7 @@ fun KassabuchApp() {
                 Screen.Expense -> {
                     ExpenseScreen(
                         uiState = expenseState,
-                        categories = listOf(
-                            "Lebensmittel",
-                            "Wohnen/Miete",
-                            "Alimente",
-                            "Heizen/Strom",
-                            "Internet/Telefon",
-                            "Mobilität/Transport",
-                            "Gesundheit/Medikamente",
-                            "Kleidung",
-                            "Freizeit",
-                            "Versicherungen",
-                            "Google Play",
-                            "Sonstiges"
-                        ),
+                        categories = categoriesState.expenses.map { it.name },
                         onAddExpense = expenseViewModel::addExpense,
                         onBack = { currentScreen = Screen.Dashboard }
                     )
@@ -154,6 +158,16 @@ fun KassabuchApp() {
                         onBack = { currentScreen = Screen.Dashboard }
                     )
                 }
+                Screen.Categories -> {
+                    CategoriesScreen(
+                        uiState = categoriesState,
+                        onAddIncome = categoriesViewModel::addIncomeCategory,
+                        onAddExpense = categoriesViewModel::addExpenseCategory,
+                        onRenameIncome = categoriesViewModel::renameIncomeCategory,
+                        onRenameExpense = categoriesViewModel::renameExpenseCategory,
+                        onBack = { currentScreen = Screen.Dashboard }
+                    )
+                }
             }
         }
     }
@@ -164,5 +178,6 @@ private enum class Screen {
     Income,
     Expense,
     Payouts,
-    FixedExpenses
+    FixedExpenses,
+    Categories
 }
