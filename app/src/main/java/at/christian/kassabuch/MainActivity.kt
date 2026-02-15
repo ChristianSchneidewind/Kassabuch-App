@@ -17,11 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.christian.kassabuch.data.AppDatabase
+import at.christian.kassabuch.data.DailyRateRepository
 import at.christian.kassabuch.data.ExpenseRepository
 import at.christian.kassabuch.data.IncomeRepository
-import at.christian.kassabuch.ui.DashboardExpenseItem
+import at.christian.kassabuch.ui.DailyRateViewModel
+import at.christian.kassabuch.ui.DailyRateViewModelFactory
 import at.christian.kassabuch.ui.DashboardScreen
-import at.christian.kassabuch.ui.DashboardUiState
+import at.christian.kassabuch.ui.DashboardViewModel
+import at.christian.kassabuch.ui.DashboardViewModelFactory
 import at.christian.kassabuch.ui.ExpenseScreen
 import at.christian.kassabuch.ui.ExpenseViewModel
 import at.christian.kassabuch.ui.ExpenseViewModelFactory
@@ -44,6 +47,7 @@ fun KassabuchApp() {
     val database = remember { AppDatabase.getInstance(context) }
     val incomeRepository = remember { IncomeRepository(database.incomeDao()) }
     val expenseRepository = remember { ExpenseRepository(database.expenseDao()) }
+    val dailyRateRepository = remember { DailyRateRepository(database.dailyRateDao()) }
 
     val incomeViewModel: IncomeViewModel = viewModel(
         key = "income",
@@ -53,9 +57,19 @@ fun KassabuchApp() {
         key = "expense",
         factory = ExpenseViewModelFactory(expenseRepository)
     )
+    val dailyRateViewModel: DailyRateViewModel = viewModel(
+        key = "dailyRate",
+        factory = DailyRateViewModelFactory(dailyRateRepository)
+    )
+    val dashboardViewModel: DashboardViewModel = viewModel(
+        key = "dashboard",
+        factory = DashboardViewModelFactory(dailyRateRepository)
+    )
 
     val incomeState by incomeViewModel.uiState.collectAsState()
     val expenseState by expenseViewModel.uiState.collectAsState()
+    val dailyRateState by dailyRateViewModel.uiState.collectAsState()
+    val dashboardState by dashboardViewModel.uiState.collectAsState()
 
     var currentScreen by rememberSaveable { mutableStateOf(Screen.Dashboard) }
 
@@ -64,31 +78,7 @@ fun KassabuchApp() {
             when (currentScreen) {
                 Screen.Dashboard -> {
                     DashboardScreen(
-                        uiState = DashboardUiState(
-                            monthTitle = "März 2026",
-                            payoutAmount = "1.234,56 €",
-                            payoutDate = "03.04.2026",
-                            monthlyBalance = "+ 320,00 €",
-                            incomeSum = "1.500,00 €",
-                            expenseSum = "1.180,00 €",
-                            recentExpenses = listOf(
-                                DashboardExpenseItem(
-                                    title = "Lebensmittel",
-                                    date = "12.03.2026",
-                                    amount = "45,90 €"
-                                ),
-                                DashboardExpenseItem(
-                                    title = "Internet/Telefon",
-                                    date = "10.03.2026",
-                                    amount = "29,90 €"
-                                ),
-                                DashboardExpenseItem(
-                                    title = "Mobilität",
-                                    date = "08.03.2026",
-                                    amount = "18,00 €"
-                                )
-                            )
-                        ),
+                        uiState = dashboardState,
                         onAddIncome = { currentScreen = Screen.Income },
                         onAddExpense = { currentScreen = Screen.Expense }
                     )
@@ -96,8 +86,10 @@ fun KassabuchApp() {
                 Screen.Income -> {
                     IncomeScreen(
                         uiState = incomeState,
+                        rateUiState = dailyRateState,
                         categories = listOf("Lohn", "Sozialleistungen"),
                         onAddIncome = incomeViewModel::addIncome,
+                        onEditDailyRate = dailyRateViewModel::addRate,
                         onBack = { currentScreen = Screen.Dashboard }
                     )
                 }

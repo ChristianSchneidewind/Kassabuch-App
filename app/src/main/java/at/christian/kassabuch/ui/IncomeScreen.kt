@@ -36,11 +36,14 @@ private val dateInputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 @Composable
 fun IncomeScreen(
     uiState: IncomeUiState,
+    rateUiState: DailyRateUiState,
     categories: List<String>,
     onAddIncome: (String, Double, LocalDate, IncomeType, String?) -> Unit,
+    onEditDailyRate: (Double, LocalDate) -> Unit,
     onBack: () -> Unit
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showRateDialog by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -58,6 +61,36 @@ fun IncomeScreen(
             )
             Button(onClick = onBack) {
                 Text(text = stringResource(R.string.action_back))
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = stringResource(R.string.daily_rate_title),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = rateUiState.currentRate,
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                rateUiState.currentValidFrom?.let { date ->
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.daily_rate_valid_from, date),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(onClick = { showRateDialog = true }) {
+                        Text(text = stringResource(R.string.daily_rate_edit))
+                    }
+                }
             }
         }
 
@@ -118,6 +151,62 @@ fun IncomeScreen(
             }
         )
     }
+
+    if (showRateDialog) {
+        EditDailyRateDialog(
+            onDismiss = { showRateDialog = false },
+            onConfirm = { amount, date ->
+                onEditDailyRate(amount, date)
+                showRateDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun EditDailyRateDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Double, LocalDate) -> Unit
+) {
+    var amountInput by rememberSaveable { mutableStateOf("") }
+    var dateInput by rememberSaveable { mutableStateOf(LocalDate.now().format(dateInputFormatter)) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.daily_rate_edit_title)) },
+        confirmButton = {
+            Button(onClick = {
+                val amount = amountInput.replace(",", ".").toDoubleOrNull()
+                val date = runCatching { LocalDate.parse(dateInput, dateInputFormatter) }.getOrNull()
+                if (amount != null && date != null) {
+                    onConfirm(amount, date)
+                }
+            }) {
+                Text(text = stringResource(R.string.action_save))
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text(text = stringResource(R.string.action_cancel))
+            }
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = amountInput,
+                    onValueChange = { amountInput = it },
+                    label = { Text(text = stringResource(R.string.daily_rate_amount_label)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = dateInput,
+                    onValueChange = { dateInput = it },
+                    label = { Text(text = stringResource(R.string.daily_rate_date_label)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    )
 }
 
 @Composable
@@ -258,8 +347,13 @@ private fun IncomeScreenPreview() {
                     )
                 )
             ),
+            rateUiState = DailyRateUiState(
+                currentRate = "45,00 €",
+                currentValidFrom = "01.02.2026"
+            ),
             categories = listOf("Lohn", "Sozialleistungen"),
             onAddIncome = { _, _, _, _, _ -> },
+            onEditDailyRate = { _, _ -> },
             onBack = { }
         )
     }

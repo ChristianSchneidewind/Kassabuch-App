@@ -26,6 +26,13 @@
     <string name="income_type_recurring">Wiederkehrend</string>
     <string name="income_note_label">Text / Notiz</string>
 
+    <string name="daily_rate_title">Tagsatz</string>
+    <string name="daily_rate_edit">Tagsatz bearbeiten</string>
+    <string name="daily_rate_edit_title">Tagsatz bearbeiten</string>
+    <string name="daily_rate_valid_from">Gültig ab: %1$s</string>
+    <string name="daily_rate_amount_label">Tagsatz</string>
+    <string name="daily_rate_date_label">Gültig ab (TT.MM.JJJJ)</string>
+
     <string name="expense_title">Ausgaben</string>
     <string name="expense_empty_state">Noch keine Ausgaben erfasst.</string>
     <string name="expense_add_title">Ausgabe hinzufügen</string>
