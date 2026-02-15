@@ -7,6 +7,7 @@
     <string name="dashboard_monthly_balance">Monats-Saldo</string>
     <string name="dashboard_income_sum">Einnahmen</string>
     <string name="dashboard_expense_sum">Ausgaben</string>
+    <string name="dashboard_recent_expenses">Letzte Ausgaben</string>
 
     <string name="action_add_income">Einnahme hinzufügen</string>
     <string name="action_add_expense">Ausgabe hinzufügen</string>

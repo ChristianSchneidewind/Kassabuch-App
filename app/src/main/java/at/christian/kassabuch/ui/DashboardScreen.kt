@@ -20,13 +20,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import at.christian.kassabuch.R
 
+data class DashboardExpenseItem(
+    val title: String,
+    val date: String,
+    val amount: String
+)
+
 data class DashboardUiState(
     val monthTitle: String,
     val payoutAmount: String,
     val payoutDate: String,
     val monthlyBalance: String,
     val incomeSum: String,
-    val expenseSum: String
+    val expenseSum: String,
+    val recentExpenses: List<DashboardExpenseItem>
 )
 
 @Composable
@@ -109,6 +116,42 @@ fun DashboardScreen(uiState: DashboardUiState) {
             }
         }
 
+        if (uiState.recentExpenses.isNotEmpty()) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = stringResource(R.string.dashboard_recent_expenses),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    uiState.recentExpenses.forEachIndexed { index, expense ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = expense.title,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    text = expense.date,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                            Text(
+                                text = expense.amount,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        if (index < uiState.recentExpenses.lastIndex) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+            }
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -141,7 +184,24 @@ private fun DashboardScreenPreview() {
                     payoutDate = "03.04.2026",
                     monthlyBalance = "+ 320,00 €",
                     incomeSum = "1.500,00 €",
-                    expenseSum = "1.180,00 €"
+                    expenseSum = "1.180,00 €",
+                    recentExpenses = listOf(
+                        DashboardExpenseItem(
+                            title = "Lebensmittel",
+                            date = "12.03.2026",
+                            amount = "45,90 €"
+                        ),
+                        DashboardExpenseItem(
+                            title = "Internet/Telefon",
+                            date = "10.03.2026",
+                            amount = "29,90 €"
+                        ),
+                        DashboardExpenseItem(
+                            title = "Mobilität",
+                            date = "08.03.2026",
+                            amount = "18,00 €"
+                        )
+                    )
                 )
             )
         }

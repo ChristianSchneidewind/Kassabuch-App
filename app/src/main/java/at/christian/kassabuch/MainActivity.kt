@@ -31,7 +31,24 @@ fun KassabuchApp() {
                     payoutDate = "03.04.2026",
                     monthlyBalance = "+ 320,00 €",
                     incomeSum = "1.500,00 €",
-                    expenseSum = "1.180,00 €"
+                    expenseSum = "1.180,00 €",
+                    recentExpenses = listOf(
+                        DashboardExpenseItem(
+                            title = "Lebensmittel",
+                            date = "12.03.2026",
+                            amount = "45,90 €"
+                        ),
+                        DashboardExpenseItem(
+                            title = "Internet/Telefon",
+                            date = "10.03.2026",
+                            amount = "29,90 €"
+                        ),
+                        DashboardExpenseItem(
+                            title = "Mobilität",
+                            date = "08.03.2026",
+                            amount = "18,00 €"
+                        )
+                    )
                 )
             )
         }
