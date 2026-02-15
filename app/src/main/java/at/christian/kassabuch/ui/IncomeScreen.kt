@@ -20,7 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -41,7 +41,7 @@ fun IncomeScreen(
     onAddIncome: (String, Double, LocalDate, IncomeType) -> Unit,
     onBack: () -> Unit
 ) {
-    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showDialog by rememberSaveable { false }
 
     Column(
         modifier = Modifier
@@ -115,11 +115,11 @@ private fun AddIncomeDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, Double, LocalDate, IncomeType) -> Unit
 ) {
-    var selectedCategory by rememberSaveable { mutableStateOf(categories.firstOrNull().orEmpty()) }
-    var categoryExpanded by rememberSaveable { mutableStateOf(false) }
-    var amountInput by rememberSaveable { mutableStateOf("") }
-    var dateInput by rememberSaveable { mutableStateOf(LocalDate.now().format(dateInputFormatter)) }
-    var type by rememberSaveable { mutableStateOf(IncomeType.ONE_TIME) }
+    var selectedCategory by rememberSaveable { categories.firstOrNull().orEmpty() }
+    var categoryExpanded by rememberSaveable { false }
+    var amountInput by rememberSaveable { "" }
+    var dateInput by rememberSaveable { LocalDate.now().format(dateInputFormatter) }
+    var type by rememberSaveable { IncomeType.ONE_TIME }
 
     AlertDialog(
         onDismissRequest = onDismiss,
