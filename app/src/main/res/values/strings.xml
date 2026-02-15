@@ -25,4 +25,15 @@
     <string name="income_type_one_time">Einmalig</string>
     <string name="income_type_recurring">Wiederkehrend</string>
     <string name="income_note_label">Text / Notiz</string>
+
+    <string name="expense_title">Ausgaben</string>
+    <string name="expense_empty_state">Noch keine Ausgaben erfasst.</string>
+    <string name="expense_add_title">Ausgabe hinzufügen</string>
+    <string name="expense_category_label">Kategorie</string>
+    <string name="expense_amount_label">Betrag</string>
+    <string name="expense_date_label">Datum (TT.MM.JJJJ)</string>
+    <string name="expense_type_label">Typ</string>
+    <string name="expense_type_fixed">Fix</string>
+    <string name="expense_type_variable">Variabel</string>
+    <string name="expense_note_label">Text / Notiz</string>
 </resources>

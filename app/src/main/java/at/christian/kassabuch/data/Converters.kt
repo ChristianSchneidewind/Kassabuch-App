@@ -23,4 +23,14 @@ class Converters {
     fun fromIncomeType(type: IncomeType?): String? {
         return type?.name
     }
+
+    @TypeConverter
+    fun toExpenseType(value: String?): ExpenseType? {
+        return value?.let { ExpenseType.valueOf(it) }
+    }
+
+    @TypeConverter
+    fun fromExpenseType(type: ExpenseType?): String? {
+        return type?.name
+    }
 }
