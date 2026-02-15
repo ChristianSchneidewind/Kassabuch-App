@@ -68,7 +68,6 @@ fun KassabuchApp() {
 
     val incomeState by incomeViewModel.uiState.collectAsState()
     val expenseState by expenseViewModel.uiState.collectAsState()
-    val dailyRateState by dailyRateViewModel.uiState.collectAsState()
     val dashboardState by dashboardViewModel.uiState.collectAsState()
 
     var currentScreen by rememberSaveable { mutableStateOf(Screen.Dashboard) }
@@ -86,7 +85,6 @@ fun KassabuchApp() {
                 Screen.Income -> {
                     IncomeScreen(
                         uiState = incomeState,
-                        rateUiState = dailyRateState,
                         categories = listOf("Lohn", "Sozialleistungen"),
                         onAddIncome = incomeViewModel::addIncome,
                         onEditDailyRate = dailyRateViewModel::addRate,
