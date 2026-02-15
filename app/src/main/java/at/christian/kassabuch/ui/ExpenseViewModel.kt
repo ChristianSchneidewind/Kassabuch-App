@@ -28,17 +28,23 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
             repository.observeExpenses().collect { expenses ->
                 _uiState.update { state ->
                     state.copy(
-                        items = expenses.map { expense ->
+                        fixedItems = expenses.filter { it.type == ExpenseType.FIXED }.map { expense ->
                             ExpenseListItem(
                                 id = expense.id,
                                 category = expense.category,
                                 amount = expenseCurrencyFormatter.format(expense.amount),
                                 date = expense.date.format(expenseDateFormatter),
-                                typeLabel = if (expense.type == ExpenseType.FIXED) {
-                                    "Fix"
-                                } else {
-                                    "Variabel"
-                                },
+                                typeLabel = "Fix",
+                                note = expense.note
+                            )
+                        },
+                        variableItems = expenses.filter { it.type == ExpenseType.VARIABLE }.map { expense ->
+                            ExpenseListItem(
+                                id = expense.id,
+                                category = expense.category,
+                                amount = expenseCurrencyFormatter.format(expense.amount),
+                                date = expense.date.format(expenseDateFormatter),
+                                typeLabel = "Variabel",
                                 note = expense.note
                             )
                         }
@@ -80,7 +86,8 @@ class ExpenseViewModelFactory(private val repository: ExpenseRepository) : ViewM
 }
 
 data class ExpenseUiState(
-    val items: List<ExpenseListItem> = emptyList()
+    val fixedItems: List<ExpenseListItem> = emptyList(),
+    val variableItems: List<ExpenseListItem> = emptyList()
 )
 
 data class ExpenseListItem(

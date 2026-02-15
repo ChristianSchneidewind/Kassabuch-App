@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.christian.kassabuch.data.AppDatabase
 import at.christian.kassabuch.data.DailyRateRepository
 import at.christian.kassabuch.data.ExpenseRepository
+import at.christian.kassabuch.data.FixedExpenseRuleRepository
 import at.christian.kassabuch.data.IncomeRepository
 import at.christian.kassabuch.data.PayoutScheduleRepository
 import at.christian.kassabuch.data.SeedingRunner
@@ -31,6 +32,9 @@ import at.christian.kassabuch.ui.DashboardViewModelFactory
 import at.christian.kassabuch.ui.ExpenseScreen
 import at.christian.kassabuch.ui.ExpenseViewModel
 import at.christian.kassabuch.ui.ExpenseViewModelFactory
+import at.christian.kassabuch.ui.FixedExpenseScreen
+import at.christian.kassabuch.ui.FixedExpenseViewModel
+import at.christian.kassabuch.ui.FixedExpenseViewModelFactory
 import at.christian.kassabuch.ui.IncomeScreen
 import at.christian.kassabuch.ui.IncomeViewModel
 import at.christian.kassabuch.ui.IncomeViewModelFactory
@@ -55,6 +59,7 @@ fun KassabuchApp() {
     val expenseRepository = remember { ExpenseRepository(database.expenseDao()) }
     val dailyRateRepository = remember { DailyRateRepository(database.dailyRateDao()) }
     val payoutScheduleRepository = remember { PayoutScheduleRepository(database.payoutScheduleDao()) }
+    val fixedExpenseRepository = remember { FixedExpenseRuleRepository(database.fixedExpenseRuleDao()) }
 
     val incomeViewModel: IncomeViewModel = viewModel(
         key = "income",
@@ -76,11 +81,16 @@ fun KassabuchApp() {
         key = "payout",
         factory = PayoutScheduleViewModelFactory(payoutScheduleRepository)
     )
+    val fixedExpenseViewModel: FixedExpenseViewModel = viewModel(
+        key = "fixed",
+        factory = FixedExpenseViewModelFactory(fixedExpenseRepository)
+    )
 
     val incomeState by incomeViewModel.uiState.collectAsState()
     val expenseState by expenseViewModel.uiState.collectAsState()
     val dashboardState by dashboardViewModel.uiState.collectAsState()
     val payoutState by payoutScheduleViewModel.uiState.collectAsState()
+    val fixedExpenseState by fixedExpenseViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         SeedingRunner(database.payoutScheduleDao()).seedIfEmpty()
@@ -96,7 +106,8 @@ fun KassabuchApp() {
                         uiState = dashboardState,
                         onAddIncome = { currentScreen = Screen.Income },
                         onAddExpense = { currentScreen = Screen.Expense },
-                        onShowPayouts = { currentScreen = Screen.Payouts }
+                        onShowPayouts = { currentScreen = Screen.Payouts },
+                        onShowFixedExpenses = { currentScreen = Screen.FixedExpenses }
                     )
                 }
                 Screen.Income -> {
@@ -136,6 +147,13 @@ fun KassabuchApp() {
                         onBack = { currentScreen = Screen.Dashboard }
                     )
                 }
+                Screen.FixedExpenses -> {
+                    FixedExpenseScreen(
+                        uiState = fixedExpenseState,
+                        onUpdateRule = fixedExpenseViewModel::updateRule,
+                        onBack = { currentScreen = Screen.Dashboard }
+                    )
+                }
             }
         }
     }
@@ -145,5 +163,6 @@ private enum class Screen {
     Dashboard,
     Income,
     Expense,
-    Payouts
+    Payouts,
+    FixedExpenses
 }

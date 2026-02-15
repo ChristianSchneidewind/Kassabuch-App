@@ -41,7 +41,8 @@ fun DashboardScreen(
     uiState: DashboardUiState,
     onAddIncome: () -> Unit,
     onAddExpense: () -> Unit,
-    onShowPayouts: () -> Unit
+    onShowPayouts: () -> Unit,
+    onShowFixedExpenses: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -177,10 +178,19 @@ fun DashboardScreen(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Button(onClick = onShowPayouts) {
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = onShowPayouts
+            ) {
                 Text(text = stringResource(R.string.payout_schedule_button))
+            }
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = onShowFixedExpenses
+            ) {
+                Text(text = stringResource(R.string.fixed_expense_button))
             }
         }
     }
@@ -219,7 +229,8 @@ private fun DashboardScreenPreview() {
                 ),
                 onAddIncome = { },
                 onAddExpense = { },
-                onShowPayouts = { }
+                onShowPayouts = { },
+                onShowFixedExpenses = { }
             )
         }
     }

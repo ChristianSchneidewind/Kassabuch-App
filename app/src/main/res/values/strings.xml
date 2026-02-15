@@ -39,6 +39,8 @@
     <string name="expense_type_fixed">Fix</string>
     <string name="expense_type_variable">Variabel</string>
     <string name="expense_note_label">Text / Notiz</string>
+    <string name="expense_fixed_section">Fixe Ausgaben</string>
+    <string name="expense_variable_section">Variable Ausgaben</string>
 
     <string name="payout_schedule_title">Auszahlungstermine</string>
     <string name="payout_schedule_hint">Hinweis: Auszahlung gilt für Vormonat</string>
@@ -47,5 +49,14 @@
     <string name="payout_schedule_month_label">Monat</string>
     <string name="payout_schedule_date_label">Auszahlungstermin</string>
     <string name="payout_schedule_button">Auszahlungstermine</string>
+    <string name="fixed_expense_button">Fixkosten</string>
+    <string name="fixed_expense_title">Fixe Ausgaben</string>
+    <string name="fixed_expense_empty">Noch keine Fixkosten erfasst.</string>
+    <string name="fixed_expense_edit_title">Fixkosten bearbeiten: %1$s</string>
+    <string name="fixed_expense_category_label">Kategorie</string>
+    <string name="fixed_expense_amount_label">Betrag</string>
+    <string name="fixed_expense_date_label">Gültig ab (TT.MM.JJJJ)</string>
+    <string name="fixed_expense_valid_from">Gültig ab: %1$s</string>
+    <string name="fixed_expense_valid_to">Gültig bis: %1$s</string>
     <string name="action_edit">Bearbeiten</string>
 </resources>
