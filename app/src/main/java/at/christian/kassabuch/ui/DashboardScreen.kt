@@ -33,7 +33,8 @@ data class DashboardUiState(
     val monthlyBalance: String,
     val incomeSum: String,
     val expenseSum: String,
-    val recentExpenses: List<DashboardExpenseItem>
+    val recentExpenses: List<DashboardExpenseItem>,
+    val isBudgetExceeded: Boolean
 )
 
 @Composable
@@ -120,6 +121,14 @@ fun DashboardScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
+                }
+                if (uiState.isBudgetExceeded) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(R.string.budget_warning),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
@@ -245,7 +254,8 @@ private fun DashboardScreenPreview() {
                             date = "08.03.2026",
                             amount = "18,00 €"
                         )
-                    )
+                    ),
+                    isBudgetExceeded = true
                 ),
                 onAddIncome = { },
                 onAddExpense = { },

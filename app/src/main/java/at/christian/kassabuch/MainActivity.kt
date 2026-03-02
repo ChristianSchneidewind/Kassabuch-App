@@ -89,7 +89,13 @@ fun KassabuchApp() {
     )
     val dashboardViewModel: DashboardViewModel = viewModel(
         key = "dashboard",
-        factory = DashboardViewModelFactory(dailyRateRepository, payoutScheduleRepository)
+        factory = DashboardViewModelFactory(
+            dailyRateRepository,
+            payoutScheduleRepository,
+            incomeRepository,
+            expenseRepository,
+            budgetRepository
+        )
     )
     val payoutScheduleViewModel: PayoutScheduleViewModel = viewModel(
         key = "payout",
