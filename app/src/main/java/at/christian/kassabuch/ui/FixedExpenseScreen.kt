@@ -57,13 +57,17 @@ fun FixedExpenseScreen(
                 text = stringResource(R.string.fixed_expense_title),
                 style = MaterialTheme.typography.headlineMedium
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { showAddDialog = true }) {
-                    Text(text = stringResource(R.string.fixed_expense_add_button))
-                }
-                Button(onClick = onBack) {
-                    Text(text = stringResource(R.string.action_back))
-                }
+            Button(onClick = onBack) {
+                Text(text = stringResource(R.string.action_back))
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(onClick = { showAddDialog = true }) {
+                Text(text = stringResource(R.string.fixed_expense_add_button))
             }
         }
 
