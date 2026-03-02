@@ -36,6 +36,11 @@
     <string name="income_daily_rate_label">Tagsatz (optional)</string>
     <string name="income_daily_rate_hint">Gültig ab = Einnahme-Datum</string>
 
+    <string name="notification_channel_name">Auszahlungs-Erinnerungen</string>
+    <string name="notification_channel_description">Erinnerungen 2 Tage vor Auszahlungstermin</string>
+    <string name="notification_payout_title">AMS-Auszahlung in 2 Tagen</string>
+    <string name="notification_payout_text">Auszahlung am %1$s.</string>
+
     <string name="expense_title">Ausgaben</string>
     <string name="expense_empty_state">Noch keine Ausgaben erfasst.</string>
     <string name="expense_add_title">Ausgabe hinzufügen</string>

@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -244,12 +245,16 @@ private fun AddExpenseDialog(
                 Column {
                     Text(text = stringResource(R.string.expense_type_label))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = { type = ExpenseType.FIXED }) {
-                            Text(text = stringResource(R.string.expense_type_fixed))
-                        }
-                        Button(onClick = { type = ExpenseType.VARIABLE }) {
-                            Text(text = stringResource(R.string.expense_type_variable))
-                        }
+                        FilterChip(
+                            selected = type == ExpenseType.FIXED,
+                            onClick = { type = ExpenseType.FIXED },
+                            label = { Text(text = stringResource(R.string.expense_type_fixed)) }
+                        )
+                        FilterChip(
+                            selected = type == ExpenseType.VARIABLE,
+                            onClick = { type = ExpenseType.VARIABLE },
+                            label = { Text(text = stringResource(R.string.expense_type_variable)) }
+                        )
                     }
                 }
 

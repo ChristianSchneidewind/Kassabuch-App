@@ -1,5 +1,8 @@
 package at.christian.kassabuch
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,6 +29,7 @@ import at.christian.kassabuch.data.IncomeRepository
 import at.christian.kassabuch.data.MonthlyBudgetRepository
 import at.christian.kassabuch.data.PayoutScheduleRepository
 import at.christian.kassabuch.data.SeedingRunner
+import at.christian.kassabuch.notifications.PayoutNotificationScheduler
 import at.christian.kassabuch.ui.BudgetScreen
 import at.christian.kassabuch.ui.BudgetViewModel
 import at.christian.kassabuch.ui.BudgetViewModelFactory
@@ -56,6 +60,11 @@ import at.christian.kassabuch.ui.MoreScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
+            }
+        }
         setContent {
             KassabuchApp()
         }
@@ -70,6 +79,7 @@ fun KassabuchApp() {
     val expenseRepository = remember { ExpenseRepository(database.expenseDao()) }
     val dailyRateRepository = remember { DailyRateRepository(database.dailyRateDao()) }
     val payoutScheduleRepository = remember { PayoutScheduleRepository(database.payoutScheduleDao()) }
+    val payoutNotificationScheduler = remember { PayoutNotificationScheduler(context) }
     val fixedExpenseRepository = remember { FixedExpenseRuleRepository(database.fixedExpenseRuleDao()) }
     val categoryRepository = remember {
         CategoryRepository(database.incomeCategoryDao(), database.expenseCategoryDao())
@@ -129,6 +139,12 @@ fun KassabuchApp() {
             database.incomeCategoryDao(),
             database.expenseCategoryDao()
         ).seedIfEmpty()
+    }
+
+    LaunchedEffect(payoutScheduleRepository) {
+        payoutScheduleRepository.observeSchedules().collect { schedules ->
+            payoutNotificationScheduler.scheduleReminders(schedules)
+        }
     }
 
     var currentScreen by rememberSaveable { mutableStateOf(Screen.Dashboard) }
