@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import at.christian.kassabuch.data.ExpenseEntity
 import at.christian.kassabuch.data.ExpenseRepository
 import at.christian.kassabuch.data.ExpenseType
+import at.christian.kassabuch.data.FixedExpenseRuleRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +20,10 @@ import java.util.Locale
 private val expenseDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 private val expenseCurrencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY)
 
-class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() {
+class ExpenseViewModel(
+    private val repository: ExpenseRepository,
+    private val fixedExpenseRuleRepository: FixedExpenseRuleRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ExpenseUiState())
     val uiState: StateFlow<ExpenseUiState> = _uiState.asStateFlow()
 
@@ -71,15 +75,21 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
                     note = note
                 )
             )
+            if (type == ExpenseType.FIXED) {
+                fixedExpenseRuleRepository.upsertRule(category, amount, date)
+            }
         }
     }
 }
 
-class ExpenseViewModelFactory(private val repository: ExpenseRepository) : ViewModelProvider.Factory {
+class ExpenseViewModelFactory(
+    private val repository: ExpenseRepository,
+    private val fixedExpenseRuleRepository: FixedExpenseRuleRepository
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ExpenseViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ExpenseViewModel(repository) as T
+            return ExpenseViewModel(repository, fixedExpenseRuleRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

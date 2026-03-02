@@ -82,7 +82,7 @@ fun KassabuchApp() {
     )
     val expenseViewModel: ExpenseViewModel = viewModel(
         key = "expense",
-        factory = ExpenseViewModelFactory(expenseRepository)
+        factory = ExpenseViewModelFactory(expenseRepository, fixedExpenseRepository)
     )
     val dailyRateViewModel: DailyRateViewModel = viewModel(
         key = "dailyRate",
@@ -150,6 +150,8 @@ fun KassabuchApp() {
                 Screen.FixedExpenses -> {
                     FixedExpenseScreen(
                         uiState = fixedExpenseState,
+                        categories = categoriesState.expenses.map { it.name },
+                        onAddRule = fixedExpenseViewModel::updateRule,
                         onUpdateRule = fixedExpenseViewModel::updateRule,
                         onBack = {
                             currentScreen = Screen.Dashboard

@@ -1,6 +1,7 @@
 package at.christian.kassabuch.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,10 +35,13 @@ private val fixedDateInputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 @Composable
 fun FixedExpenseScreen(
     uiState: FixedExpenseUiState,
+    categories: List<String>,
+    onAddRule: (String, Double, LocalDate) -> Unit,
     onUpdateRule: (String, Double, LocalDate) -> Unit,
     onBack: () -> Unit
 ) {
     var editCategory by rememberSaveable { mutableStateOf<String?>(null) }
+    var showAddDialog by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -53,8 +57,13 @@ fun FixedExpenseScreen(
                 text = stringResource(R.string.fixed_expense_title),
                 style = MaterialTheme.typography.headlineMedium
             )
-            Button(onClick = onBack) {
-                Text(text = stringResource(R.string.action_back))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { showAddDialog = true }) {
+                    Text(text = stringResource(R.string.fixed_expense_add_button))
+                }
+                Button(onClick = onBack) {
+                    Text(text = stringResource(R.string.action_back))
+                }
             }
         }
 
@@ -121,6 +130,17 @@ fun FixedExpenseScreen(
             }
         )
     }
+
+    if (showAddDialog) {
+        AddFixedExpenseDialog(
+            categories = categories,
+            onDismiss = { showAddDialog = false },
+            onConfirm = { category, amount, validFrom ->
+                onAddRule(category, amount, validFrom)
+                showAddDialog = false
+            }
+        )
+    }
 }
 
 @Composable
@@ -177,6 +197,108 @@ private fun EditFixedExpenseDialog(
     )
 }
 
+@Composable
+private fun AddFixedExpenseDialog(
+    categories: List<String>,
+    onDismiss: () -> Unit,
+    onConfirm: (String, Double, LocalDate) -> Unit
+) {
+    val hasCategories = categories.isNotEmpty()
+    var selectedCategory by rememberSaveable { mutableStateOf(categories.firstOrNull().orEmpty()) }
+    var categoryInput by rememberSaveable { mutableStateOf(selectedCategory) }
+    var categoryExpanded by rememberSaveable { mutableStateOf(false) }
+    var amountInput by rememberSaveable { mutableStateOf("") }
+    var dateInput by rememberSaveable { mutableStateOf(LocalDate.now().format(fixedDateInputFormatter)) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.fixed_expense_add_title)) },
+        confirmButton = {
+            Button(onClick = {
+                val amount = amountInput.replace(",", ".").toDoubleOrNull()
+                val date = runCatching { LocalDate.parse(dateInput, fixedDateInputFormatter) }.getOrNull()
+                val category = if (hasCategories) selectedCategory else categoryInput.trim()
+                if (amount != null && date != null && category.isNotBlank()) {
+                    onConfirm(category, amount, date)
+                }
+            }) {
+                Text(text = stringResource(R.string.action_save))
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text(text = stringResource(R.string.action_cancel))
+            }
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (hasCategories) {
+                    Column {
+                        Text(text = stringResource(R.string.fixed_expense_category_label))
+                        OutlinedTextField(
+                            value = selectedCategory,
+                            onValueChange = { },
+                            readOnly = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { categoryExpanded = true }
+                        )
+                        FixedExpenseCategoryDropdown(
+                            expanded = categoryExpanded,
+                            categories = categories,
+                            onDismiss = { categoryExpanded = false },
+                            onSelect = {
+                                selectedCategory = it
+                                categoryExpanded = false
+                            }
+                        )
+                    }
+                } else {
+                    OutlinedTextField(
+                        value = categoryInput,
+                        onValueChange = { categoryInput = it },
+                        label = { Text(text = stringResource(R.string.fixed_expense_category_label)) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                OutlinedTextField(
+                    value = amountInput,
+                    onValueChange = { amountInput = it },
+                    label = { Text(text = stringResource(R.string.fixed_expense_amount_label)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = dateInput,
+                    onValueChange = { dateInput = it },
+                    label = { Text(text = stringResource(R.string.fixed_expense_date_label)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun FixedExpenseCategoryDropdown(
+    expanded: Boolean,
+    categories: List<String>,
+    onDismiss: () -> Unit,
+    onSelect: (String) -> Unit
+) {
+    androidx.compose.material3.DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismiss
+    ) {
+        categories.forEach { category ->
+            androidx.compose.material3.DropdownMenuItem(
+                text = { Text(text = category) },
+                onClick = { onSelect(category) }
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun FixedExpenseScreenPreview() {
@@ -200,6 +322,8 @@ private fun FixedExpenseScreenPreview() {
                     )
                 )
             ),
+            categories = listOf("Internet/Telefon", "Wohnen/Miete"),
+            onAddRule = { _, _, _ -> },
             onUpdateRule = { _, _, _ -> },
             onBack = { }
         )

@@ -57,6 +57,8 @@
     <string name="payout_schedule_button">Auszahlungstermine</string>
     <string name="fixed_expense_button">Fixkosten</string>
     <string name="fixed_expense_title">Fixe Ausgaben</string>
+    <string name="fixed_expense_add_button">Fixkosten hinzufügen</string>
+    <string name="fixed_expense_add_title">Fixkosten hinzufügen</string>
     <string name="fixed_expense_empty">Noch keine Fixkosten erfasst.</string>
     <string name="fixed_expense_edit_title">Fixkosten bearbeiten: %1$s</string>
     <string name="fixed_expense_category_label">Kategorie</string>
