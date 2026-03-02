@@ -1,6 +1,5 @@
 package at.christian.kassabuch.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +13,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -147,13 +149,16 @@ private fun ExpenseCard(expense: ExpenseListItem) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddExpenseDialog(
     categories: List<String>,
     onDismiss: () -> Unit,
     onConfirm: (String, Double, LocalDate, ExpenseType, String?) -> Unit
 ) {
+    val hasCategories = categories.isNotEmpty()
     var selectedCategory by rememberSaveable { mutableStateOf(categories.firstOrNull().orEmpty()) }
+    var categoryInput by rememberSaveable { mutableStateOf(selectedCategory) }
     var categoryExpanded by rememberSaveable { mutableStateOf(false) }
     var amountInput by rememberSaveable { mutableStateOf("") }
     var dateInput by rememberSaveable { mutableStateOf(LocalDate.now().format(expenseDateInputFormatter)) }
@@ -167,9 +172,10 @@ private fun AddExpenseDialog(
             Button(onClick = {
                 val amount = amountInput.replace(",", ".").toDoubleOrNull()
                 val date = runCatching { LocalDate.parse(dateInput, expenseDateInputFormatter) }.getOrNull()
-                if (amount != null && date != null && selectedCategory.isNotBlank()) {
+                val category = if (hasCategories) selectedCategory else categoryInput.trim()
+                if (amount != null && date != null && category.isNotBlank()) {
                     val note = noteInput.trim().ifBlank { null }
-                    onConfirm(selectedCategory, amount, date, type, note)
+                    onConfirm(category, amount, date, type, note)
                 }
             }) {
                 Text(text = stringResource(R.string.action_save))
@@ -182,24 +188,42 @@ private fun AddExpenseDialog(
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Column {
-                    Text(text = stringResource(R.string.expense_category_label))
-                    OutlinedTextField(
-                        value = selectedCategory,
-                        onValueChange = { },
-                        readOnly = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { categoryExpanded = true }
-                    )
-                    ExpenseCategoryDropdown(
+                if (hasCategories) {
+                    ExposedDropdownMenuBox(
                         expanded = categoryExpanded,
-                        categories = categories,
-                        onDismiss = { categoryExpanded = false },
-                        onSelect = {
-                            selectedCategory = it
-                            categoryExpanded = false
+                        onExpandedChange = { categoryExpanded = !categoryExpanded }
+                    ) {
+                        OutlinedTextField(
+                            value = selectedCategory,
+                            onValueChange = { },
+                            readOnly = true,
+                            label = { Text(text = stringResource(R.string.expense_category_label)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor()
+                        )
+                        androidx.compose.material3.ExposedDropdownMenu(
+                            expanded = categoryExpanded,
+                            onDismissRequest = { categoryExpanded = false }
+                        ) {
+                            categories.forEach { category ->
+                                androidx.compose.material3.DropdownMenuItem(
+                                    text = { Text(text = category) },
+                                    onClick = {
+                                        selectedCategory = category
+                                        categoryExpanded = false
+                                    }
+                                )
+                            }
                         }
+                    }
+                } else {
+                    OutlinedTextField(
+                        value = categoryInput,
+                        onValueChange = { categoryInput = it },
+                        label = { Text(text = stringResource(R.string.expense_category_label)) },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
@@ -238,26 +262,6 @@ private fun AddExpenseDialog(
             }
         }
     )
-}
-
-@Composable
-private fun ExpenseCategoryDropdown(
-    expanded: Boolean,
-    categories: List<String>,
-    onDismiss: () -> Unit,
-    onSelect: (String) -> Unit
-) {
-    androidx.compose.material3.DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismiss
-    ) {
-        categories.forEach { category ->
-            androidx.compose.material3.DropdownMenuItem(
-                text = { Text(text = category) },
-                onClick = { onSelect(category) }
-            )
-        }
-    }
 }
 
 @Preview(showBackground = true)
