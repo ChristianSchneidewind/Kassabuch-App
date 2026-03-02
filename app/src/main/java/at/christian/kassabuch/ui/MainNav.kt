@@ -13,16 +13,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import at.christian.kassabuch.R
 
-private enum class MainTab(
+enum class MainTab(
     val labelRes: Int,
     val icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
     @DrawableRes val iconRes: Int? = null
@@ -35,20 +31,20 @@ private enum class MainTab(
 
 @Composable
 fun MainNav(
+    selectedTab: MainTab,
+    onTabSelected: (MainTab) -> Unit,
     dashboardContent: @Composable () -> Unit,
     incomeContent: @Composable () -> Unit,
     expenseContent: @Composable () -> Unit,
     moreContent: @Composable () -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(MainTab.Dashboard) }
-
     Scaffold(
         bottomBar = {
             NavigationBar {
                 MainTab.entries.forEach { tab ->
                     NavigationBarItem(
                         selected = selectedTab == tab,
-                        onClick = { selectedTab = tab },
+                        onClick = { onTabSelected(tab) },
                         icon = {
                             tab.icon?.let { icon ->
                                 Icon(icon, contentDescription = null)
