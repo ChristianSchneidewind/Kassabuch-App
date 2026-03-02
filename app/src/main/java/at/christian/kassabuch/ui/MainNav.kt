@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -24,8 +24,8 @@ import at.christian.kassabuch.R
 
 private enum class MainTab(val labelRes: Int, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     Dashboard(R.string.nav_dashboard, Icons.Filled.Home),
-    Income(R.string.nav_income, Icons.Filled.AttachMoney),
-    Expense(R.string.nav_expense, Icons.Filled.Receipt),
+    Income(R.string.nav_income, Icons.Filled.Add),
+    Expense(R.string.nav_expense, Icons.Filled.Remove),
     More(R.string.nav_more, Icons.Filled.AccountCircle)
 }
 
@@ -41,7 +41,7 @@ fun MainNav(
     Scaffold(
         bottomBar = {
             NavigationBar {
-                MainTab.values().forEach { tab ->
+                MainTab.entries.forEach { tab ->
                     NavigationBarItem(
                         selected = selectedTab == tab,
                         onClick = { selectedTab = tab },
