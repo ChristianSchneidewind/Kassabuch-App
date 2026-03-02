@@ -26,6 +26,7 @@
     <string name="income_add_title">Einnahme hinzufügen</string>
     <string name="income_category_label">Kategorie</string>
     <string name="income_amount_label">Betrag</string>
+    <string name="income_amount_optional_hint">Optional, wenn Tagsatz angegeben wird.</string>
     <string name="income_date_label">Datum (TT.MM.JJJJ)</string>
     <string name="income_type_label">Typ</string>
     <string name="income_type_one_time">Einmalig</string>

@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import at.christian.kassabuch.R
 import at.christian.kassabuch.data.IncomeType
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 private val dateInputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
@@ -146,12 +148,16 @@ private fun AddIncomeDialog(
         title = { Text(text = stringResource(R.string.income_add_title)) },
         confirmButton = {
             Button(onClick = {
-                val amount = amountInput.replace(",", ".").toDoubleOrNull()
+                val parsedAmount = amountInput.replace(",", ".").toDoubleOrNull()
                 val date = runCatching { LocalDate.parse(dateInput, dateInputFormatter) }.getOrNull()
                 val category = if (hasCategories) selectedCategory else categoryInput.trim()
-                if (amount != null && date != null && category.isNotBlank()) {
+                val dailyRate = dailyRateInput.replace(",", ".").toDoubleOrNull()
+                if (date != null && category.isNotBlank() && (parsedAmount != null || dailyRate != null)) {
                     val note = noteInput.trim().ifBlank { null }
-                    val dailyRate = dailyRateInput.replace(",", ".").toDoubleOrNull()
+                    val amount = parsedAmount ?: run {
+                        val previousMonth = YearMonth.from(date).minusMonths(1)
+                        dailyRate!! * previousMonth.lengthOfMonth()
+                    }
                     onConfirm(category, amount, date, type, note, dailyRate)
                 }
             }) {
@@ -208,6 +214,9 @@ private fun AddIncomeDialog(
                     value = amountInput,
                     onValueChange = { amountInput = it },
                     label = { Text(text = stringResource(R.string.income_amount_label)) },
+                    supportingText = {
+                        Text(text = stringResource(R.string.income_amount_optional_hint))
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -221,12 +230,16 @@ private fun AddIncomeDialog(
                 Column {
                     Text(text = stringResource(R.string.income_type_label))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = { type = IncomeType.ONE_TIME }) {
-                            Text(text = stringResource(R.string.income_type_one_time))
-                        }
-                        Button(onClick = { type = IncomeType.RECURRING }) {
-                            Text(text = stringResource(R.string.income_type_recurring))
-                        }
+                        FilterChip(
+                            selected = type == IncomeType.ONE_TIME,
+                            onClick = { type = IncomeType.ONE_TIME },
+                            label = { Text(text = stringResource(R.string.income_type_one_time)) }
+                        )
+                        FilterChip(
+                            selected = type == IncomeType.RECURRING,
+                            onClick = { type = IncomeType.RECURRING },
+                            label = { Text(text = stringResource(R.string.income_type_recurring)) }
+                        )
                     }
                 }
 
